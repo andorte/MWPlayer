@@ -18,8 +18,6 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
     public static final String API_KEY = "AIzaSyDSf-JpA_0xJxokGqWG--USklCYx1OUCaU";
     public static final String VIDEO_ID = "d00b-eKGp5g";
 
-    private YouTubePlayerFragment youTubePlayerFragment;
-
     private static final int RQS_ErrorDialog = 1;
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -28,7 +26,7 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        youTubePlayerFragment = (YouTubePlayerFragment)getFragmentManager()
+        YouTubePlayerFragment youTubePlayerFragment = (YouTubePlayerFragment) getFragmentManager()
                 .findFragmentById(R.id.youtubeplayerfragment);
         youTubePlayerFragment.initialize(API_KEY, this);
     }
