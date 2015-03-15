@@ -1,28 +1,36 @@
 package com.mobwise.mwplayer;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
+import android.widget.Toast;
+
+import com.google.android.youtube.player.YouTubeBaseActivity;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerFragment;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
 
+    public static final String API_KEY = "AIzaSyDSf-JpA_0xJxokGqWG--USklCYx1OUCaU";
+    public static final String VIDEO_ID = "d00b-eKGp5g";
+
+    private YouTubePlayerFragment youTubePlayerFragment;
+
+    private static final int RQS_ErrorDialog = 1;
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
-        }
+
+        youTubePlayerFragment = (YouTubePlayerFragment)getFragmentManager()
+                .findFragmentById(R.id.youtubeplayerfragment);
+        youTubePlayerFragment.initialize(API_KEY, this);
     }
 
 
@@ -48,19 +56,21 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
+        if (!wasRestored) {
+            player.cueVideo(VIDEO_ID);
         }
+    }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
+    @Override
+    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+        if (youTubeInitializationResult.isUserRecoverableError()) {
+            youTubeInitializationResult.getErrorDialog(this, RQS_ErrorDialog).show();
+        } else {
+            Toast.makeText(this,
+                    "YouTubePlayer.onInitializationFailure(): " + youTubeInitializationResult.toString(),
+                    Toast.LENGTH_LONG).show();
         }
     }
 }
